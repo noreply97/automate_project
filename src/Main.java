@@ -7,19 +7,36 @@ public class Main {
         State state1 = new State("Initial", true,false);
         State state2 = new State("Final", false,true);
 
-        Transition transition1 = new Transition(state1, state2, 'x');
-        Transition transition2 = new Transition(state2, state1, 'y');
+        Transition transition1 = new Transition(state1, state2, 'a');
+        Transition transition2 = new Transition(state1, state2, 'b');
+        Transition transition3 = new Transition(state1, state2, 'c');
+
+        Transition transition4 = new Transition(state2, state1, 'a');
+        Transition transition5 = new Transition(state2, state1, 'b');
+        Transition transition6 = new Transition(state2, state1, 'c');
+
 
         Automaton test = new Automaton();
 
         state1.addTransition(transition1);
-        state2.addTransition(transition2);
+        state1.addTransition(transition2);
+        state1.addTransition(transition3);
+
+        state2.addTransition(transition4);
+        state2.addTransition(transition5);
+        state2.addTransition(transition6);
+
 
         test.addInitialStates(state1);
         test.addFinalState(state2);
 
         test.addTransition(transition1);
         test.addTransition(transition2);
+        test.addTransition(transition3);
+        test.addTransition(transition4);
+        test.addTransition(transition5);
+        test.addTransition(transition6);
+
 
         test.addStates(state1);
         test.addStates(state2);
@@ -29,9 +46,8 @@ public class Main {
         test.addAlphabet('c');
 
         test.isDeterminist();
-        test.isStandart();
-
-        test.displayAutomaton();
+        test.isStandard();
+        test.isComplete();
 
     }
 }

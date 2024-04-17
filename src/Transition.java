@@ -33,5 +33,4 @@ public class Transition {
         this.symbol = symbol;
     }
 
-
 }
