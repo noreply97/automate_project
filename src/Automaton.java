@@ -1,6 +1,9 @@
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 
 public class Automaton {
     private ArrayList<State> states;
@@ -215,6 +218,72 @@ public class Automaton {
         }
         return null;
     }
+    /* Fonction nécéssaire pour la méthode suivante*/
+    public State getStateByName(String name) {
+        for (State state : states) {
+            if (state.getName().equals(name)) {
+                return state;
+            }
+        }
+        return null; // Retourne null si aucun état avec ce nom n'est trouvé
+    }
+
+    public static Automaton readFromFile(String filePath) {
+        // Initialisation
+        Automaton automaton = new Automaton();
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            int alphabetSize = Integer.parseInt(br.readLine());
+            int numberOfStates = Integer.parseInt(br.readLine());
+
+            // Lire et ajouter les états initiaux
+            String[] initialStatesLine = br.readLine().split(" ");
+            int numberOfInitialStates = Integer.parseInt(initialStatesLine[0]);
+            for (int i = 1; i <= numberOfInitialStates; i++) {
+                int initialStateNumber = Integer.parseInt(initialStatesLine[i]);
+                State initialState = new State("q" + initialStateNumber, true, false);
+                automaton.addInitialState(initialState);
+                automaton.addState(initialState);
+            }
+
+            // Lire et ajouter les états terminaux
+            String[] finalStatesLine = br.readLine().split(" ");
+            int numberOfFinalStates = Integer.parseInt(finalStatesLine[0]);
+            for (int i = 1; i <= numberOfFinalStates; i++) {
+                int finalStateNumber = Integer.parseInt(finalStatesLine[i]);
+                State finalState = new State("q" + finalStateNumber, false, true);
+                automaton.addFinalState(finalState);
+                automaton.addState(finalState);
+            }
+
+            // Lire et ajouter les transitions
+            int numberOfTransitions = Integer.parseInt(br.readLine());
+            for (int i = 0; i < numberOfTransitions; i++) {
+                String transitionLine = br.readLine().trim();
+                char fromStateName = transitionLine.charAt(0);
+                char symbol = transitionLine.charAt(1);
+                char toStateName = transitionLine.charAt(2);
+
+                State fromState = automaton.getStateByName("q" + fromStateName);
+                if (fromState == null) {
+                    fromState = new State("q" + fromStateName, false, false);
+                    automaton.addState(fromState);
+                }
+
+                State toState = automaton.getStateByName("q" + toStateName);
+                if (toState == null) {
+                    toState = new State("q" + toStateName, false, false);
+                    automaton.addState(toState);
+                }
+
+                Transition transition = new Transition(fromState, toState, symbol);
+                automaton.addTransition(transition);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return automaton;
+    }
 }
+
 
 

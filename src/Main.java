@@ -4,7 +4,7 @@ import java.util.ArrayList;
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) {
-        State state1 = new State("Initial", true,false);
+        /*State state1 = new State("Initial", true,false);
         State state2 = new State("Final", false,true);
 
         Transition transition1 = new Transition(state1, state2, 'a');
@@ -53,7 +53,9 @@ public class Main {
 
         test2 = test.standardizeAutomaton();
         test2.isStandard();
-        test2.isComplete();
+        test2.isComplete();*/
 
+    Automaton auto= new Automaton();
+    auto=Automaton.readFromFile("C:\\Users\\alban\\IdeaProjects\\automate_project\\src\\ichierTestAutomateReader");
     }
 }
