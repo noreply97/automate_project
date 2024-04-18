@@ -6,6 +6,9 @@ public class State {
     private boolean isInitial;
     private boolean isFinal;
 
+    public State() {
+    }
+
     public State(String name, boolean isInitial, boolean isFinal) {
         transitions = new ArrayList<>();
         this.name = name;
@@ -39,6 +42,10 @@ public class State {
 
     public void addTransition(Transition transition){
         transitions.add(transition);
+    }
+
+    public ArrayList<Transition> getTransitions() {
+        return transitions;
     }
 
     //Verifie que l'etat n'a pas plus d'une transition avec le meme symbole
