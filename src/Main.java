@@ -17,29 +17,31 @@ public class Main {
 
 
         Automaton test = new Automaton();
+        Automaton test2 = new Automaton();
+
 
         state1.addTransition(transition1);
         state1.addTransition(transition2);
-        state1.addTransition(transition3);
+        //state1.addTransition(transition3);
 
         state2.addTransition(transition4);
         state2.addTransition(transition5);
         state2.addTransition(transition6);
 
 
-        test.addInitialStates(state1);
+        test.addInitialState(state1);
         test.addFinalState(state2);
 
         test.addTransition(transition1);
         test.addTransition(transition2);
-        test.addTransition(transition3);
+        //test.addTransition(transition3);
         test.addTransition(transition4);
         test.addTransition(transition5);
         test.addTransition(transition6);
 
 
-        test.addStates(state1);
-        test.addStates(state2);
+        test.addState(state1);
+        test.addState(state2);
 
         test.addAlphabet('a');
         test.addAlphabet('b');
@@ -48,6 +50,10 @@ public class Main {
         test.isDeterminist();
         test.isStandard();
         test.isComplete();
+
+        test2 = test.standardizeAutomaton();
+        test2.isStandard();
+        test2.isComplete();
 
     }
 }
