@@ -55,5 +55,6 @@ public class Main {
 
     Automaton auto= new Automaton();
     auto=Automaton.readFromFile("src\\ichierTestAutomateReader.txt");
+    auto.displayAutomaton();
     }
 }

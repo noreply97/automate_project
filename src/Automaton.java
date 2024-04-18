@@ -235,12 +235,18 @@ public class Automaton {
             int alphabetSize = Integer.parseInt(br.readLine());
             int numberOfStates = Integer.parseInt(br.readLine());
 
+            //Ajouter les symboles
+            for(int i=0;i<alphabetSize;i++){
+                char symbol =(char) ('a'+i);
+                automaton.alphabet.add(symbol);
+            }
+
             // Lire et ajouter les états initiaux
             String[] initialStatesLine = br.readLine().split(" ");
             int numberOfInitialStates = Integer.parseInt(initialStatesLine[0]);
             for (int i = 1; i <= numberOfInitialStates; i++) {
                 int initialStateNumber = Integer.parseInt(initialStatesLine[i]);
-                State initialState = new State("q" + initialStateNumber, true, false);
+                State initialState = new State("Q" + initialStateNumber, true, false);
                 automaton.addInitialState(initialState);
                 automaton.addState(initialState);
             }
@@ -250,7 +256,7 @@ public class Automaton {
             int numberOfFinalStates = Integer.parseInt(finalStatesLine[0]);
             for (int i = 1; i <= numberOfFinalStates; i++) {
                 int finalStateNumber = Integer.parseInt(finalStatesLine[i]);
-                State finalState = new State("q" + finalStateNumber, false, true);
+                State finalState = new State("Q" + finalStateNumber, false, true);
                 automaton.addFinalState(finalState);
                 automaton.addState(finalState);
             }
@@ -263,15 +269,15 @@ public class Automaton {
                 char symbol = transitionLine.charAt(1);
                 char toStateName = transitionLine.charAt(2);
 
-                State fromState = automaton.getStateByName("q" + fromStateName);
+                State fromState = automaton.getStateByName("Q" + fromStateName);
                 if (fromState == null) {
-                    fromState = new State("q" + fromStateName, false, false);
+                    fromState = new State("Q" + fromStateName, false, false);
                     automaton.addState(fromState);
                 }
 
-                State toState = automaton.getStateByName("q" + toStateName);
+                State toState = automaton.getStateByName("Q" + toStateName);
                 if (toState == null) {
-                    toState = new State("q" + toStateName, false, false);
+                    toState = new State("Q" + toStateName, false, false);
                     automaton.addState(toState);
                 }
 
@@ -282,6 +288,59 @@ public class Automaton {
             e.printStackTrace();
         }
         return automaton;
+    }
+
+    public void displayAutomaton() {
+        // Affichage de l'état initial
+        System.out.println("État(s) initial(aux) :");
+        for (State initialState : initialStates) {
+            System.out.println(initialState.getName());
+        }
+        System.out.println();
+
+        // Affichage de l'état terminal
+        System.out.println("État(s) terminal(aux) :");
+        for (State finalState : finalStates) {
+            System.out.println(finalState.getName());
+        }
+        System.out.println();
+
+        // Affichage de la table des transitions
+        System.out.println("Table des transitions :");
+        // Affichage de la première ligne avec les symboles de l'alphabet
+        System.out.print("     ");
+        for (Character symbol : alphabet) {
+            System.out.print(symbol + "  ");
+        }
+        System.out.println();
+
+        // Affichage des transitions pour chaque état
+        for (State state : states) {
+            System.out.print(state.getName());
+            // Indiquer si l'état est initial ou final
+            if (initialStates.contains(state)) {
+                System.out.print(" E ");
+            } else if (finalStates.contains(state)) {
+                System.out.print(" S ");
+            } else {
+                System.out.print("   ");
+            }
+            // Affichage des transitions pour chaque symbole de l'alphabet
+            for (Character symbol : alphabet) {
+                boolean hasTransition = false;
+                for (Transition transition : transitions) {
+                    if (transition.getToState().equals(state) && transition.getSymbol() == symbol) {
+                        System.out.print(transition.getToState().getName() + " ");
+                        hasTransition = true;
+                        break;
+                    }
+                }
+                if (!hasTransition) {
+                    System.out.print("- ");
+                }
+            }
+            System.out.println();
+        }
     }
 }
 
