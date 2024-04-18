@@ -1,7 +1,5 @@
 import java.util.ArrayList;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) {
         /*State state1 = new State("Initial", true,false);
@@ -56,6 +54,6 @@ public class Main {
         test2.isComplete();*/
 
     Automaton auto= new Automaton();
-    auto=Automaton.readFromFile("C:\\Users\\alban\\IdeaProjects\\automate_project\\src\\ichierTestAutomateReader");
+    auto=Automaton.readFromFile("src\\ichierTestAutomateReader.txt");
     }
 }
