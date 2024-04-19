@@ -233,7 +233,6 @@ public class Automaton {
         Automaton automaton = new Automaton();
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             int alphabetSize = Integer.parseInt(br.readLine());
-            int numberOfStates = Integer.parseInt(br.readLine());
 
             //Ajouter les symboles
             for(int i=0;i<alphabetSize;i++){
@@ -291,45 +290,69 @@ public class Automaton {
     }
 
     public void displayAutomaton() {
+        // Calcul des largeurs de colonnes basées sur le contenu
+        int[] columnWidths = new int[this.alphabet.size() + 2]; // +2 pour les colonnes des états et des états initiaux/finaux
+        for (int i = 0; i < columnWidths.length; i++) {
+            columnWidths[i] = 1; // Largeur minimale
+        }
 
-        // Affichage de la table des transitions
-        System.out.println("Table des transitions :");
+        // Parcours des transitions pour trouver la longueur maximale pour chaque colonne
+        for (State state : states) {
+            // Longueur du nom d'état
+            columnWidths[0] = Math.max(columnWidths[0], state.getName().length() + 2); // +2 pour le centrage
+
+            for (Character symbol : alphabet) {
+                ArrayList<String> toStates = new ArrayList<>();
+                for (Transition transition : transitions) {
+                    if (transition.fromState().equals(state) && transition.getSymbol() == symbol) {
+                        toStates.add(transition.getToState().getName());
+                    }
+                }
+                int maxLength = toStates.stream().mapToInt(String::length).max().orElse(0);
+                columnWidths[alphabet.indexOf(symbol) + 1] = Math.max(columnWidths[alphabet.indexOf(symbol) + 1], maxLength + 2); // +2 pour le centrage
+            }
+        }
+
+        // Affichage du tableau avec les colonnes alignées
         // Affichage de la première ligne avec les symboles de l'alphabet
-        System.out.print("     ");
+        System.out.print(center("State",columnWidths[0]) + "|");
+        System.out.print(" I/F | ");
         for (Character symbol : alphabet) {
-            System.out.print(symbol + "  ");
+            System.out.print(center((" " + symbol + " "), columnWidths[alphabet.indexOf(symbol) + 1]) + "|");
         }
         System.out.println();
 
         // Affichage des transitions pour chaque état
         for (State state : states) {
-            System.out.print(state.getName());
+            System.out.print("   "+state.getName()+center("",columnWidths[0]) + "|");
             // Indiquer si l'état est initial ou final
             if (initialStates.contains(state)) {
-                System.out.print(" E ");
+                System.out.print(center(" I ", columnWidths[alphabet.size() + 1]) + "|");
             } else if (finalStates.contains(state)) {
-                System.out.print(" S ");
+                System.out.print(center(" F ",columnWidths[alphabet.size() + 1]) + "|");
             } else {
-                System.out.print("   ");
+                System.out.print(center("   ",columnWidths[alphabet.size() + 1]) + "|");
             }
             // Affichage des transitions pour chaque symbole de l'alphabet
             for (Character symbol : alphabet) {
-                boolean hasTransition = false;
+                ArrayList<String> toStates = new ArrayList<>();
                 for (Transition transition : transitions) {
                     if (transition.fromState().equals(state) && transition.getSymbol() == symbol) {
-                        System.out.print(transition.getToState().getName() + " ");
-                        hasTransition = true;
-                        break;
+                        toStates.add(transition.getToState().getName());
                     }
                 }
-                if (!hasTransition) {
-                    System.out.print("- ");
+                if (!toStates.isEmpty()) {
+                    System.out.print(center((" " + String.join(",", toStates) + " "), columnWidths[alphabet.indexOf(symbol) + 1]) + "|");
+                } else {
+                    System.out.print(center("  - ", columnWidths[alphabet.indexOf(symbol) + 1]) + "|");
                 }
             }
             System.out.println();
         }
     }
+
+    // Méthode pour centrer une chaîne dans un espace donné
+    public static String center(String s, int length) {
+        return String.format("%-" + length + "s%s%-" + length + "s", "", s, "");
+    }
 }
-
-
-
