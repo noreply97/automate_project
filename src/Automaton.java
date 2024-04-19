@@ -233,6 +233,7 @@ public class Automaton {
         Automaton automaton = new Automaton();
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             int alphabetSize = Integer.parseInt(br.readLine());
+            int numberOfStates = Integer.parseInt(br.readLine());
 
             //Ajouter les symboles
             for(int i=0;i<alphabetSize;i++){
@@ -243,7 +244,7 @@ public class Automaton {
             // Lire et ajouter les états initiaux
             String[] initialStatesLine = br.readLine().split(" ");
             int numberOfInitialStates = Integer.parseInt(initialStatesLine[0]);
-            for (int i = 1; i <= numberOfInitialStates; i++) {
+            for (int i = 1 ; i <= numberOfInitialStates; i++) {
                 int initialStateNumber = Integer.parseInt(initialStatesLine[i]);
                 State initialState = new State("Q" + initialStateNumber, true, false);
                 automaton.addInitialState(initialState);
@@ -355,4 +356,31 @@ public class Automaton {
     public static String center(String s, int length) {
         return String.format("%-" + length + "s%s%-" + length + "s", "", s, "");
     }
+
+
+public Automaton createComplementAutomaton() {
+    Automaton complementAutomaton = new Automaton();
+
+    // Copie des états, transitions et alphabet de l'automate d'origine
+    complementAutomaton.setStates(new ArrayList<>(states));
+    complementAutomaton.setTransitions(new ArrayList<>(transitions));
+    complementAutomaton.setAlphabet(new ArrayList<>(alphabet));
+
+    // Copie des états initiaux de l'automate d'origine
+    for (State initialState : initialStates) {
+        complementAutomaton.addInitialState(initialState);
+    }
+
+    // Inversion des états finaux et non finaux
+    for (State state : states) {
+        if (finalStates.contains(state)) {
+            state.setFinal(false);
+        } else {
+            state.setFinal(true);
+            complementAutomaton.finalStates.add(state);
+        }
+    }
+
+    return complementAutomaton;
+}
 }
