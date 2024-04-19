@@ -6,10 +6,10 @@ public class State {
     private boolean isInitial;
     private boolean isFinal;
 
-    public State() {
-    }
+    public State(){
 
-    public State(final String name,final boolean isInitial,final boolean isFinal) {
+    }
+    public State(String name, boolean isInitial, boolean isFinal) {
         transitions = new ArrayList<>();
         this.name = name;
         this.isInitial = isInitial;
@@ -17,35 +17,31 @@ public class State {
     }
 
     public String getName() {
-        return this.name;
+        return name;
     }
 
-    public void setName(final String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
     public boolean isInitial() {
-        return this.isInitial;
+        return isInitial;
     }
 
-    public void setInitial(final boolean initial) {
-        this.isInitial = initial;
+    public void setInitial(boolean initial) {
+        isInitial = initial;
     }
 
     public boolean isFinal() {
-        return this.isFinal;
+        return isFinal;
     }
 
-    public void setFinal(final boolean aFinal) {
-        this.isFinal = aFinal;
+    public void setFinal(boolean aFinal) {
+        isFinal = aFinal;
     }
 
-    public void addTransition(final Transition transition){
+    public void addTransition(Transition transition){
         transitions.add(transition);
-    }
-
-    public ArrayList<Transition> getTransitions() {
-        return transitions;
     }
 
     //Verifie que l'etat n'a pas plus d'une transition avec le meme symbole

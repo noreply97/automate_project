@@ -167,14 +167,14 @@ public class Automaton {
         //On parcourt toutes les transitions de chaque état de l'automate
         for (State state : states) {
             for (Transition transition : transitions) {
-                if (transition.getFromState().equals(state)){
+                if (transition.getFromState().equals(state)) {
                     //On ne laisse que les lettres qui ne correspondent à aucune transition dans le set
                     alphabetSet.remove(transition.getSymbol());
                 }
             }
             for (char symbol : alphabetSet) {
                 State trashState = new State();
-                trashState.setName("Poubelle");
+                trashState.setName("P");
                 automaton.addState(trashState);
                 automaton.addTransition(new Transition(state, trashState, symbol));
             }
@@ -196,7 +196,7 @@ public class Automaton {
             // Création d'un nouvel état initial s'il y a plusieurs états initiaux
             if (this.getInitialStates().size() != 1) {
                 State newInitialState = new State();
-                newInitialState.setName("newInitialState"); // Nom de l'état initial standardisé
+                newInitialState.setName("NQ0"); // Nom de l'état initial standardisé
                 newInitialState.setInitial(true);
                 standardizedAutomaton.getStates().add(newInitialState);
                 standardizedAutomaton.getInitialStates().clear();
@@ -218,6 +218,12 @@ public class Automaton {
         }
         return null;
     }
+
+    public Automaton determinizeAutomaton() {
+        Automaton determinizedAutomaton = new Automaton();
+
+    }
+
     /* Fonction nécéssaire pour la méthode suivante*/
     public State getStateByName(String name) {
         for (State state : states) {
@@ -236,8 +242,8 @@ public class Automaton {
             int numberOfStates = Integer.parseInt(br.readLine());
 
             //Ajouter les symboles
-            for(int i=0;i<alphabetSize;i++){
-                char symbol =(char) ('a'+i);
+            for (int i = 0; i < alphabetSize; i++) {
+                char symbol = (char) ('a' + i);
                 automaton.addAlphabet(symbol);
             }
 
