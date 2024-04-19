@@ -9,7 +9,7 @@ public class State {
     public State() {
     }
 
-    public State(String name, boolean isInitial, boolean isFinal) {
+    public State(final String name,final boolean isInitial,final boolean isFinal) {
         transitions = new ArrayList<>();
         this.name = name;
         this.isInitial = isInitial;
@@ -17,30 +17,30 @@ public class State {
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
     public boolean isInitial() {
-        return isInitial;
+        return this.isInitial;
     }
 
-    public void setInitial(boolean initial) {
-        isInitial = initial;
+    public void setInitial(final boolean initial) {
+        this.isInitial = initial;
     }
 
     public boolean isFinal() {
-        return isFinal;
+        return this.isFinal;
     }
 
-    public void setFinal(boolean aFinal) {
-        isFinal = aFinal;
+    public void setFinal(final boolean aFinal) {
+        this.isFinal = aFinal;
     }
 
-    public void addTransition(Transition transition){
+    public void addTransition(final Transition transition){
         transitions.add(transition);
     }
 

@@ -238,7 +238,7 @@ public class Automaton {
             //Ajouter les symboles
             for(int i=0;i<alphabetSize;i++){
                 char symbol =(char) ('a'+i);
-                automaton.alphabet.add(symbol);
+                automaton.addAlphabet(symbol);
             }
 
             // Lire et ajouter les états initiaux
@@ -291,19 +291,6 @@ public class Automaton {
     }
 
     public void displayAutomaton() {
-        // Affichage de l'état initial
-        System.out.println("État(s) initial(aux) :");
-        for (State initialState : initialStates) {
-            System.out.println(initialState.getName());
-        }
-        System.out.println();
-
-        // Affichage de l'état terminal
-        System.out.println("État(s) terminal(aux) :");
-        for (State finalState : finalStates) {
-            System.out.println(finalState.getName());
-        }
-        System.out.println();
 
         // Affichage de la table des transitions
         System.out.println("Table des transitions :");
@@ -329,7 +316,7 @@ public class Automaton {
             for (Character symbol : alphabet) {
                 boolean hasTransition = false;
                 for (Transition transition : transitions) {
-                    if (transition.getToState().equals(state) && transition.getSymbol() == symbol) {
+                    if (transition.fromState().equals(state) && transition.getSymbol() == symbol) {
                         System.out.print(transition.getToState().getName() + " ");
                         hasTransition = true;
                         break;

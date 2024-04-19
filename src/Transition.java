@@ -3,33 +3,37 @@ public class Transition {
     private State toState;
     private char symbol;
 
-    public Transition(State fromState, State toState, char symbol) {
+    public Transition(final State fromState,final State toState,final char symbol) {
         this.fromState = fromState;
         this.toState = toState;
         this.symbol = symbol;
     }
 
     public State getFromState() {
-        return fromState;
+        return this.fromState;
     }
 
-    public void setFromState(State fromState) {
+    public void setFromState(final State fromState) {
         this.fromState = fromState;
     }
 
     public State getToState() {
-        return toState;
+        return this.toState;
     }
 
-    public void setToState(State toState) {
+    public State fromState(){
+        return this.fromState;
+    }
+
+    public void setToState(final State toState) {
         this.toState = toState;
     }
 
     public char getSymbol() {
-        return symbol;
+        return this.symbol;
     }
 
-    public void setSymbol(char symbol) {
+    public void setSymbol(final char symbol) {
         this.symbol = symbol;
     }
 
