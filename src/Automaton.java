@@ -184,39 +184,15 @@ public class Automaton {
     }
 
     public Automaton standardizeAutomaton() {
+        Automaton standart= new Automaton();
         if (this.isStandard()) {
             System.out.println("L'automate est déjà standard.");
+            return null;
         } else {
-            Automaton standardizedAutomaton = new Automaton();
-            standardizedAutomaton.setAlphabet(new ArrayList<>(this.getAlphabet()));
-            standardizedAutomaton.setStates(new ArrayList<>(this.getStates()));
-
-            standardizedAutomaton.setInitialState(new ArrayList<>(this.getInitialStates()));
-
-            // Création d'un nouvel état initial s'il y a plusieurs états initiaux
-            if (this.getInitialStates().size() != 1) {
-                State newInitialState = new State();
-                newInitialState.setName("newInitialState"); // Nom de l'état initial standardisé
-                newInitialState.setInitial(true);
-                standardizedAutomaton.getStates().add(newInitialState);
-                standardizedAutomaton.getInitialStates().clear();
-                standardizedAutomaton.getInitialStates().add(newInitialState);
-            }
-
-            // Copie des états
-            for (State state : this.getStates()) {
-                State newState = new State();
-                newState.setName(state.getName());
-                newState.setFinal(state.isFinal());
-                standardizedAutomaton.getStates().add(newState);
-            }
-
-            completeTransitions(standardizedAutomaton);
-
-            System.out.println("Automate standardisé !");
-            return standardizedAutomaton;
+            standart=this.Standarisation();
+            return standart;
         }
-        return null;
+
     }
     /* Fonction nécéssaire pour la méthode suivante*/
     public State getStateByName(String name) {
@@ -382,5 +358,28 @@ public Automaton createComplementAutomaton() {
     }
 
     return complementAutomaton;
-}
+    }
+    private Automaton Standarisation(){
+        Automaton standart = new Automaton();
+
+        // Copie des états, transitions et alphabet de l'automate d'origine
+        standart.setStates(new ArrayList<>(states));
+        standart.setTransitions(new ArrayList<>(transitions));
+        standart.setAlphabet(new ArrayList<>(alphabet));
+        standart.setFinalStates(new ArrayList<>(finalStates));
+
+        // Création de l'état initial standardisé
+        State newInitialState = new State();
+        newInitialState.setName("I"); // Nom de l'état initial standardisé
+        newInitialState.setInitial(true);
+        standart.addInitialState(newInitialState);
+        standart.addState(newInitialState);
+
+        for (Transition transitions : this.transitions){
+            if(transitions.fromState().equals(initialStates.getFirst())){
+                standart.addTransition(new Transition(newInitialState, transitions.getToState(), transitions.getSymbol()));
+            }
+        }
+        return standart;
+    }
 }
