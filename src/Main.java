@@ -4,7 +4,6 @@ public class Main {
         Automaton auto1= new Automaton();
         auto=Automaton.readFromFile("src\\ichierTestAutomateReader.txt");
         auto.displayAutomaton();
-        auto1=auto.createComplementAutomaton();
-        auto1.displayAutomaton();
+        auto.isStandard();
     }
 }
