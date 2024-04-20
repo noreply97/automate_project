@@ -145,7 +145,7 @@ public class B3_Automaton {
     }
     public boolean isStandardTest() {
         if (initialStates.size() == 1) {
-            for (Transition transition : transitions) {
+            for (B3_Transition transition : transitions) {
                 if (transition.getToState().equals(initialStates.getFirst())) {
                     return false;
                 }
@@ -180,7 +180,7 @@ public class B3_Automaton {
         return true;
     }
     public boolean isCompleteTest() {
-        for (State state : states) {
+        for (B3_State state : states) {
             for (char symbol : alphabet) {
                 if (!hasTransition(state, symbol)) {
                     return false;
