@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -118,6 +120,13 @@ public class B3_Automaton {
             return false;
         }
     }
+    public boolean isDeterministTest() {
+        if (initialStates.size() == 1 && initialStates.getFirst().hasUniqueTransitionsSymbol()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     //vérifie s'il n'y a qu'une seule entrée et si oui, verifie que l'entrée ne reçoit pas de transition
     public boolean isStandard() {
@@ -134,6 +143,18 @@ public class B3_Automaton {
         System.out.println("L'automate n'est pas standard");
         return false;
     }
+    public boolean isStandardTest() {
+        if (initialStates.size() == 1) {
+            for (Transition transition : transitions) {
+                if (transition.getToState().equals(initialStates.getFirst())) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
 
     public boolean hasTransition(B3_State state, char symbol) {
         // Vérifier s'il existe une transition depuis l'état actuel avec le symbole donné
@@ -156,6 +177,16 @@ public class B3_Automaton {
             }
         }
         System.out.println("L'automate est complet.");
+        return true;
+    }
+    public boolean isCompleteTest() {
+        for (State state : states) {
+            for (char symbol : alphabet) {
+                if (!hasTransition(state, symbol)) {
+                    return false;
+                }
+            }
+        }
         return true;
     }
 
@@ -182,7 +213,7 @@ public class B3_Automaton {
 
             // On crée un état poubelle
             B3_State trashState = new B3_State();
-            trashState.setName("P");
+            trashState.setName("QP");
             completedAutomaton.addState(trashState);
 
             // On ajoute les transitions manquantes vers l'état poubelle
@@ -201,13 +232,14 @@ public class B3_Automaton {
 
     public B3_Automaton standardizeAutomaton() {
         B3_Automaton standardizedAutomaton= new B3_Automaton();
-        if (this.isStandard()) {
+        if (this.isStandardTest()) {
             System.out.println("L'automate est déjà standard.");
             return null;
         } else {
             standardizedAutomaton = this.standardize();
             return standardizedAutomaton;
         }
+
     }
 
     private B3_Automaton standardize(){
@@ -221,7 +253,7 @@ public class B3_Automaton {
 
         // Création de l'état initial standardisé
         B3_State newInitialState = new B3_State();
-        newInitialState.setName("I"); // Nom de l'état initial standardisé
+        newInitialState.setName("QI"); // Nom de l'état initial standardisé
         newInitialState.setInitial(true);
         standardizedAutomaton.addInitialState(newInitialState);
         standardizedAutomaton.addState(newInitialState);
