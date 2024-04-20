@@ -1,18 +1,16 @@
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class Automaton {
-    private ArrayList<State> states;
-    private ArrayList<State> finalStates;
-    private ArrayList<State> initialStates;
+public class B3_Automaton {
+    private ArrayList<B3_State> states;
+    private ArrayList<B3_State> finalStates;
+    private ArrayList<B3_State> initialStates;
     private ArrayList<Character> alphabet;
-    private ArrayList<Transition> transitions;
+    private ArrayList<B3_Transition> transitions;
 
-    public Automaton() {
+    public B3_Automaton() {
         states = new ArrayList<>();
         finalStates = new ArrayList<>();
         initialStates = new ArrayList<>();
@@ -20,7 +18,7 @@ public class Automaton {
         transitions = new ArrayList<>();
     }
 
-    public Automaton(ArrayList<State> states, ArrayList<State> finalStates, ArrayList<State> initialStates, ArrayList<Character> alphabet, ArrayList<Transition> transitions) {
+    public B3_Automaton(ArrayList<B3_State> states, ArrayList<B3_State> finalStates, ArrayList<B3_State> initialStates, ArrayList<Character> alphabet, ArrayList<B3_Transition> transitions) {
         states = new ArrayList<>();
         finalStates = new ArrayList<>();
         initialStates = new ArrayList<>();
@@ -34,28 +32,28 @@ public class Automaton {
     }
 
 
-    public void setStates(ArrayList<State> states) {
+    public void setStates(ArrayList<B3_State> states) {
         this.states = states;
     }
 
-    public void addState(State state) {
+    public void addState(B3_State state) {
         states.add(state);
     }
 
-    public ArrayList<State> getStates() {
+    public ArrayList<B3_State> getStates() {
         return states;
     }
 
 
-    public void setTransitions(ArrayList<Transition> transitions) {
+    public void setTransitions(ArrayList<B3_Transition> transitions) {
         this.transitions = transitions;
     }
 
-    public ArrayList<Transition> getTransitions() {
+    public ArrayList<B3_Transition> getTransitions() {
         return transitions;
     }
 
-    public void addTransition(Transition transition) {
+    public void addTransition(B3_Transition transition) {
         transitions.add(transition);
     }
 
@@ -72,15 +70,15 @@ public class Automaton {
     }
 
 
-    public ArrayList<State> getFinalStates() {
+    public ArrayList<B3_State> getFinalStates() {
         return finalStates;
     }
 
-    public void setFinalStates(ArrayList<State> finalStates) {
+    public void setFinalStates(ArrayList<B3_State> finalStates) {
         this.finalStates = finalStates;
     }
 
-    public void addFinalState(State state) {
+    public void addFinalState(B3_State state) {
         if (state.isFinal()) {
             finalStates.add(state);
         } else {
@@ -88,15 +86,15 @@ public class Automaton {
         }
     }
 
-    public ArrayList<State> getInitialStates() {
+    public ArrayList<B3_State> getInitialStates() {
         return initialStates;
     }
 
-    public void setInitialState(ArrayList<State> initialStates) {
+    public void setInitialState(ArrayList<B3_State> initialStates) {
         this.initialStates = initialStates;
     }
 
-    public void addInitialState(State state) {
+    public void addInitialState(B3_State state) {
         if (state.isInitial()) {
             initialStates.add(state);
         } else {
@@ -124,7 +122,7 @@ public class Automaton {
     //vérifie s'il n'y a qu'une seule entrée et si oui, verifie que l'entrée ne reçoit pas de transition
     public boolean isStandard() {
         if (initialStates.size() == 1) {
-            for (Transition transition : transitions) {
+            for (B3_Transition transition : transitions) {
                 if (transition.getToState().equals(initialStates.getFirst())) {
                     System.out.println("L'etat initial recoit une transition donc l'automate n'est pas standard");
                     return false;
@@ -137,9 +135,9 @@ public class Automaton {
         return false;
     }
 
-    public boolean hasTransition(State state, char symbol) {
+    public boolean hasTransition(B3_State state, char symbol) {
         // Vérifier s'il existe une transition depuis l'état actuel avec le symbole donné
-        for (Transition transition : this.getTransitions()) {
+        for (B3_Transition transition : this.getTransitions()) {
             if (transition.getFromState().equals(state) && transition.getSymbol() == symbol) {
                 return true;
             }
@@ -149,7 +147,7 @@ public class Automaton {
     }
 
     public boolean isComplete() {
-        for (State state : states) {
+        for (B3_State state : states) {
             for (char symbol : alphabet) {
                 if (!hasTransition(state, symbol)) {
                     System.out.println("L'automate n'est pas complet.");
@@ -161,12 +159,19 @@ public class Automaton {
         return true;
     }
 
-    public Automaton completeAutomaton() {
+    public void whatIsIt(){
+        this.isStandard();
+        this.isDeterminist();
+        this.isComplete();
+    }
+
+    public B3_Automaton completeAutomaton() {
         if(isComplete()){
             System.out.println("L'automate est déjà complet.");
+            return null;
         }else {
             // Création d'un nouvel automate qui sera l'automate complété
-            Automaton completedAutomaton = new Automaton();
+            B3_Automaton completedAutomaton = new B3_Automaton();
 
             // Copie des informations de l'automate à compléter dans le nouveau
             completedAutomaton.states = new ArrayList<>(this.states);
@@ -176,15 +181,15 @@ public class Automaton {
             completedAutomaton.transitions = new ArrayList<>(this.transitions);
 
             // On crée un état poubelle
-            State trashState = new State();
+            B3_State trashState = new B3_State();
             trashState.setName("P");
             completedAutomaton.addState(trashState);
 
             // On ajoute les transitions manquantes vers l'état poubelle
-            for (State currentState : completedAutomaton.states) {
+            for (B3_State currentState : completedAutomaton.states) {
                 for (char symbol : completedAutomaton.alphabet) {
                     if (!completedAutomaton.hasTransition(currentState, symbol)) {
-                        Transition trashTransition = new Transition(currentState, trashState, symbol);
+                        B3_Transition trashTransition = new B3_Transition(currentState, trashState, symbol);
                         completedAutomaton.transitions.add(trashTransition);
                     }
                 }
@@ -192,11 +197,10 @@ public class Automaton {
             System.out.println("Automate complété");
             return completedAutomaton;
         }
-        return null;
     }
 
-    public Automaton standardizeAutomaton() {
-        Automaton standardizedAutomaton= new Automaton();
+    public B3_Automaton standardizeAutomaton() {
+        B3_Automaton standardizedAutomaton= new B3_Automaton();
         if (this.isStandard()) {
             System.out.println("L'automate est déjà standard.");
             return null;
@@ -204,11 +208,10 @@ public class Automaton {
             standardizedAutomaton = this.standardize();
             return standardizedAutomaton;
         }
-
     }
 
-    private Automaton standardize(){
-        Automaton standardizedAutomaton = new Automaton();
+    private B3_Automaton standardize(){
+        B3_Automaton standardizedAutomaton = new B3_Automaton();
 
         // Copie des états, transitions et alphabet de l'automate d'origine
         standardizedAutomaton.setStates(new ArrayList<>(states));
@@ -217,23 +220,23 @@ public class Automaton {
         standardizedAutomaton.setFinalStates(new ArrayList<>(finalStates));
 
         // Création de l'état initial standardisé
-        State newInitialState = new State();
+        B3_State newInitialState = new B3_State();
         newInitialState.setName("I"); // Nom de l'état initial standardisé
         newInitialState.setInitial(true);
         standardizedAutomaton.addInitialState(newInitialState);
         standardizedAutomaton.addState(newInitialState);
 
-        for (Transition transitions : this.transitions){
+        for (B3_Transition transitions : this.transitions){
             if(transitions.fromState().equals(initialStates.getFirst())){
-                standardizedAutomaton.addTransition(new Transition(newInitialState, transitions.getToState(), transitions.getSymbol()));
+                standardizedAutomaton.addTransition(new B3_Transition(newInitialState, transitions.getToState(), transitions.getSymbol()));
             }
         }
         return standardizedAutomaton;
     }
 
     // Fonction nécéssaire pour la méthode suivante
-    public State getStateByName(String name) {
-        for (State state : states) {
+    public B3_State getStateByName(String name) {
+        for (B3_State state : states) {
             if (state.getName().equals(name)) {
                 return state;
             }
@@ -241,9 +244,9 @@ public class Automaton {
         return null; // Retourne null si aucun état avec ce nom n'est trouvé
     }
 
-    public static Automaton readFromFile(String filePath) {
+    public static B3_Automaton readFromFile(String filePath) {
         // Initialisation
-        Automaton automaton = new Automaton();
+        B3_Automaton automaton = new B3_Automaton();
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             int alphabetSize = Integer.parseInt(br.readLine());
             int numberOfStates = Integer.parseInt(br.readLine());
@@ -259,7 +262,7 @@ public class Automaton {
             int numberOfInitialStates = Integer.parseInt(initialStatesLine[0]);
             for (int i = 1 ; i <= numberOfInitialStates; i++) {
                 int initialStateNumber = Integer.parseInt(initialStatesLine[i]);
-                State initialState = new State("Q" + initialStateNumber, true, false);
+                B3_State initialState = new B3_State("Q" + initialStateNumber, true, false);
                 automaton.addInitialState(initialState);
                 automaton.addState(initialState);
             }
@@ -269,7 +272,7 @@ public class Automaton {
             int numberOfFinalStates = Integer.parseInt(finalStatesLine[0]);
             for (int i = 1; i <= numberOfFinalStates; i++) {
                 int finalStateNumber = Integer.parseInt(finalStatesLine[i]);
-                State finalState = new State("Q" + finalStateNumber, false, true);
+                B3_State finalState = new B3_State("Q" + finalStateNumber, false, true);
                 automaton.addFinalState(finalState);
                 automaton.addState(finalState);
             }
@@ -282,19 +285,19 @@ public class Automaton {
                 char symbol = transitionLine.charAt(1);
                 char toStateName = transitionLine.charAt(2);
 
-                State fromState = automaton.getStateByName("Q" + fromStateName);
+                B3_State fromState = automaton.getStateByName("Q" + fromStateName);
                 if (fromState == null) {
-                    fromState = new State("Q" + fromStateName, false, false);
+                    fromState = new B3_State("Q" + fromStateName, false, false);
                     automaton.addState(fromState);
                 }
 
-                State toState = automaton.getStateByName("Q" + toStateName);
+                B3_State toState = automaton.getStateByName("Q" + toStateName);
                 if (toState == null) {
-                    toState = new State("Q" + toStateName, false, false);
+                    toState = new B3_State("Q" + toStateName, false, false);
                     automaton.addState(toState);
                 }
 
-                Transition transition = new Transition(fromState, toState, symbol);
+                B3_Transition transition = new B3_Transition(fromState, toState, symbol);
                 automaton.addTransition(transition);
             }
         } catch (IOException e) {
@@ -311,13 +314,13 @@ public class Automaton {
         }
 
         // Parcours des transitions pour trouver la longueur maximale pour chaque colonne
-        for (State state : states) {
+        for (B3_State state : states) {
             // Longueur du nom d'état
             columnWidths[0] = Math.max(columnWidths[0], state.getName().length() + 2); // +2 pour le centrage
 
             for (Character symbol : alphabet) {
                 ArrayList<String> toStates = new ArrayList<>();
-                for (Transition transition : transitions) {
+                for (B3_Transition transition : transitions) {
                     if (transition.fromState().equals(state) && transition.getSymbol() == symbol) {
                         toStates.add(transition.getToState().getName());
                     }
@@ -337,7 +340,7 @@ public class Automaton {
         System.out.println();
 
         // Affichage des transitions pour chaque état
-        for (State state : states) {
+        for (B3_State state : states) {
             System.out.print("   "+state.getName()+center("",columnWidths[0]) + "|");
             // Indiquer si l'état est initial ou final
             if (initialStates.contains(state)) {
@@ -350,7 +353,7 @@ public class Automaton {
             // Affichage des transitions pour chaque symbole de l'alphabet
             for (Character symbol : alphabet) {
                 ArrayList<String> toStates = new ArrayList<>();
-                for (Transition transition : transitions) {
+                for (B3_Transition transition : transitions) {
                     if (transition.fromState().equals(state) && transition.getSymbol() == symbol) {
                         toStates.add(transition.getToState().getName());
                     }
@@ -371,8 +374,8 @@ public class Automaton {
     }
 
 
-public Automaton createComplementAutomaton() {
-    Automaton complementAutomaton = new Automaton();
+public B3_Automaton createComplementAutomaton() {
+    B3_Automaton complementAutomaton = new B3_Automaton();
 
     // Copie des états, transitions et alphabet de l'automate d'origine
     complementAutomaton.setStates(new ArrayList<>(states));
@@ -380,12 +383,12 @@ public Automaton createComplementAutomaton() {
     complementAutomaton.setAlphabet(new ArrayList<>(alphabet));
 
     // Copie des états initiaux de l'automate d'origine
-    for (State initialState : initialStates) {
+    for (B3_State initialState : initialStates) {
         complementAutomaton.addInitialState(initialState);
     }
 
     // Inversion des états finaux et non finaux
-    for (State state : states) {
+    for (B3_State state : states) {
         if (finalStates.contains(state)) {
             state.setFinal(false);
         } else {

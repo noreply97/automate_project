@@ -1,31 +1,31 @@
-public class Transition {
-    private State fromState;
-    private State toState;
+public class B3_Transition {
+    private B3_State fromState;
+    private B3_State toState;
     private char symbol;
 
-    public Transition(final State fromState,final State toState,final char symbol) {
+    public B3_Transition(final B3_State fromState,final B3_State toState,final char symbol) {
         this.fromState = fromState;
         this.toState = toState;
         this.symbol = symbol;
     }
 
-    public State getFromState() {
+    public B3_State getFromState() {
         return this.fromState;
     }
 
-    public void setFromState(final State fromState) {
+    public void setFromState(final B3_State fromState) {
         this.fromState = fromState;
     }
 
-    public State getToState() {
+    public B3_State getToState() {
         return this.toState;
     }
 
-    public State fromState(){
+    public B3_State fromState(){
         return this.fromState;
     }
 
-    public void setToState(final State toState) {
+    public void setToState(final B3_State toState) {
         this.toState = toState;
     }
 
