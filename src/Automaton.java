@@ -120,6 +120,13 @@ public class Automaton {
             return false;
         }
     }
+    public boolean isDeterministTest() {
+        if (initialStates.size() == 1 && initialStates.getFirst().hasUniqueTransitionsSymbol()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     //vérifie s'il n'y a qu'une seule entrée et si oui, verifie que l'entrée ne reçoit pas de transition
     public boolean isStandard() {
@@ -136,6 +143,18 @@ public class Automaton {
         System.out.println("L'automate n'est pas standard");
         return false;
     }
+    public boolean isStandardTest() {
+        if (initialStates.size() == 1) {
+            for (Transition transition : transitions) {
+                if (transition.getToState().equals(initialStates.getFirst())) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
 
     public boolean hasTransition(State state, char symbol) {
         // Vérifier s'il existe une transition depuis l'état actuel avec le symbole donné
@@ -160,9 +179,19 @@ public class Automaton {
         System.out.println("L'automate est complet.");
         return true;
     }
+    public boolean isCompleteTest() {
+        for (State state : states) {
+            for (char symbol : alphabet) {
+                if (!hasTransition(state, symbol)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
     public Automaton completeAutomaton() {
-        if(isComplete()){
+        if(isCompleteTest()){
             System.out.println("L'automate est déjà complet.");
         }else {
             // Création d'un nouvel automate qui sera l'automate complété
@@ -197,7 +226,7 @@ public class Automaton {
 
     public Automaton standardizeAutomaton() {
         Automaton standardizedAutomaton= new Automaton();
-        if (this.isStandard()) {
+        if (this.isStandardTest()) {
             System.out.println("L'automate est déjà standard.");
             return null;
         } else {
@@ -395,12 +424,4 @@ public Automaton createComplementAutomaton() {
     }
     return complementAutomaton;
     }
-
-    /*
-    public Automaton determinizeAutomaton(){
-        Automaton determinizedAutomaton = new Automaton();
-        determinizedAutomaton.setAlphabet(alphabet);
-
-    }
-    */
 }
