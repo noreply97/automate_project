@@ -206,7 +206,7 @@ public class Automaton {
 
             // On crée un état poubelle
             State trashState = new State();
-            trashState.setName("P");
+            trashState.setName("QP");
             completedAutomaton.addState(trashState);
 
             // On ajoute les transitions manquantes vers l'état poubelle
@@ -247,7 +247,7 @@ public class Automaton {
 
         // Création de l'état initial standardisé
         State newInitialState = new State();
-        newInitialState.setName("I"); // Nom de l'état initial standardisé
+        newInitialState.setName("QI"); // Nom de l'état initial standardisé
         newInitialState.setInitial(true);
         standardizedAutomaton.addInitialState(newInitialState);
         standardizedAutomaton.addState(newInitialState);
