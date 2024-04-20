@@ -126,7 +126,7 @@ public class Automaton {
         if (initialStates.size() == 1) {
             for (Transition transition : transitions) {
                 if (transition.getToState().equals(initialStates.getFirst())) {
-                    System.out.println("L'etat initial recoit une transition donc il n'est pas standard");
+                    System.out.println("L'etat initial recoit une transition donc l'automate n'est pas standard");
                     return false;
                 }
             }
@@ -161,40 +161,77 @@ public class Automaton {
         return true;
     }
 
-    public Automaton completeTransitions(Automaton automaton) {
-        // On utilise un set de char afin d'éviter les doublons qui contient l'alphabet de l'automate
-        Set<Character> alphabetSet = new HashSet<>(automaton.getAlphabet());
-        //On parcourt toutes les transitions de chaque état de l'automate
-        for (State state : states) {
-            for (Transition transition : transitions) {
-                if (transition.getFromState().equals(state)){
-                    //On ne laisse que les lettres qui ne correspondent à aucune transition dans le set
-                    alphabetSet.remove(transition.getSymbol());
+    public Automaton completeAutomaton() {
+        if(isComplete()){
+            System.out.println("L'automate est déjà complet.");
+        }else {
+            // Création d'un nouvel automate qui sera l'automate complété
+            Automaton completedAutomaton = new Automaton();
+
+            // Copie des informations de l'automate à compléter dans le nouveau
+            completedAutomaton.states = new ArrayList<>(this.states);
+            completedAutomaton.finalStates = new ArrayList<>(this.finalStates);
+            completedAutomaton.initialStates = new ArrayList<>(this.initialStates);
+            completedAutomaton.alphabet = new ArrayList<>(this.alphabet);
+            completedAutomaton.transitions = new ArrayList<>(this.transitions);
+
+            // On crée un état poubelle
+            State trashState = new State();
+            trashState.setName("P");
+            completedAutomaton.addState(trashState);
+
+            // On ajoute les transitions manquantes vers l'état poubelle
+            for (State currentState : completedAutomaton.states) {
+                for (char symbol : completedAutomaton.alphabet) {
+                    if (!completedAutomaton.hasTransition(currentState, symbol)) {
+                        Transition trashTransition = new Transition(currentState, trashState, symbol);
+                        completedAutomaton.transitions.add(trashTransition);
+                    }
                 }
             }
-            for (char symbol : alphabetSet) {
-                State trashState = new State();
-                trashState.setName("Poubelle");
-                automaton.addState(trashState);
-                automaton.addTransition(new Transition(state, trashState, symbol));
-            }
-            alphabetSet.clear();
+            System.out.println("Automate complété");
+            return completedAutomaton;
         }
-        return automaton;
+        return null;
     }
 
     public Automaton standardizeAutomaton() {
-        Automaton standart= new Automaton();
+        Automaton standardizedAutomaton= new Automaton();
         if (this.isStandard()) {
             System.out.println("L'automate est déjà standard.");
             return null;
         } else {
-            standart=this.Standarisation();
-            return standart;
+            standardizedAutomaton = this.standardize();
+            return standardizedAutomaton;
         }
 
     }
-    /* Fonction nécéssaire pour la méthode suivante*/
+
+    private Automaton standardize(){
+        Automaton standardizedAutomaton = new Automaton();
+
+        // Copie des états, transitions et alphabet de l'automate d'origine
+        standardizedAutomaton.setStates(new ArrayList<>(states));
+        standardizedAutomaton.setTransitions(new ArrayList<>(transitions));
+        standardizedAutomaton.setAlphabet(new ArrayList<>(alphabet));
+        standardizedAutomaton.setFinalStates(new ArrayList<>(finalStates));
+
+        // Création de l'état initial standardisé
+        State newInitialState = new State();
+        newInitialState.setName("I"); // Nom de l'état initial standardisé
+        newInitialState.setInitial(true);
+        standardizedAutomaton.addInitialState(newInitialState);
+        standardizedAutomaton.addState(newInitialState);
+
+        for (Transition transitions : this.transitions){
+            if(transitions.fromState().equals(initialStates.getFirst())){
+                standardizedAutomaton.addTransition(new Transition(newInitialState, transitions.getToState(), transitions.getSymbol()));
+            }
+        }
+        return standardizedAutomaton;
+    }
+
+    // Fonction nécéssaire pour la méthode suivante
     public State getStateByName(String name) {
         for (State state : states) {
             if (state.getName().equals(name)) {
@@ -356,30 +393,14 @@ public Automaton createComplementAutomaton() {
             complementAutomaton.finalStates.add(state);
         }
     }
-
     return complementAutomaton;
     }
-    private Automaton Standarisation(){
-        Automaton standart = new Automaton();
 
-        // Copie des états, transitions et alphabet de l'automate d'origine
-        standart.setStates(new ArrayList<>(states));
-        standart.setTransitions(new ArrayList<>(transitions));
-        standart.setAlphabet(new ArrayList<>(alphabet));
-        standart.setFinalStates(new ArrayList<>(finalStates));
+    /*
+    public Automaton determinizeAutomaton(){
+        Automaton determinizedAutomaton = new Automaton();
+        determinizedAutomaton.setAlphabet(alphabet);
 
-        // Création de l'état initial standardisé
-        State newInitialState = new State();
-        newInitialState.setName("I"); // Nom de l'état initial standardisé
-        newInitialState.setInitial(true);
-        standart.addInitialState(newInitialState);
-        standart.addState(newInitialState);
-
-        for (Transition transitions : this.transitions){
-            if(transitions.fromState().equals(initialStates.getFirst())){
-                standart.addTransition(new Transition(newInitialState, transitions.getToState(), transitions.getSymbol()));
-            }
-        }
-        return standart;
     }
+    */
 }
