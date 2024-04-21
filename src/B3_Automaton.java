@@ -2,6 +2,7 @@ import java.util.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.stream.Collectors;
 
 public class B3_Automaton {
     private ArrayList<B3_State> states;
@@ -419,96 +420,96 @@ public class B3_Automaton {
 
 
     public B3_Automaton createComplementAutomaton() {
-        B3_Automaton complementAutomaton = new B3_Automaton();
+        if(isCompleteTest() && isDeterministTest()) {
+            B3_Automaton complementAutomaton = new B3_Automaton();
 
-        // Copie des états, transitions et alphabet de l'automate d'origine
-        complementAutomaton.setStates(new ArrayList<>(states));
-        complementAutomaton.setTransitions(new ArrayList<>(transitions));
-        complementAutomaton.setAlphabet(new ArrayList<>(alphabet));
+            // Copie des états, transitions et alphabet de l'automate d'origine
+            complementAutomaton.setStates(new ArrayList<>(states));
+            complementAutomaton.setTransitions(new ArrayList<>(transitions));
+            complementAutomaton.setAlphabet(new ArrayList<>(alphabet));
 
-        // Copie des états initiaux de l'automate d'origine
-        for (B3_State initialState : initialStates) {
-            complementAutomaton.addInitialState(initialState);
-        }
-
-        // Inversion des états finaux et non finaux
-        for (B3_State state : states) {
-            if (finalStates.contains(state)) {
-                state.setFinal(false);
-            } else {
-                state.setFinal(true);
-                complementAutomaton.finalStates.add(state);
+            // Copie des états initiaux de l'automate d'origine
+            for (B3_State initialState : initialStates) {
+                complementAutomaton.addInitialState(initialState);
             }
+
+            // Inversion des états finaux et non finaux
+            for (B3_State state : states) {
+                if (finalStates.contains(state)) {
+                    state.setFinal(false);
+                } else {
+                    state.setFinal(true);
+                    complementAutomaton.finalStates.add(state);
+                }
+            }
+            return complementAutomaton;
         }
-        return complementAutomaton;
+        return null;
     }
 
 
-    public B3_Automaton determiniseAutomaton() {
-        B3_Automaton deterministicAutomaton = new B3_Automaton();
-        deterministicAutomaton.alphabet = new ArrayList<>(alphabet);
-        deterministicAutomaton.initialStates = new ArrayList<>();
-        deterministicAutomaton.finalStates = new ArrayList<>();
-        deterministicAutomaton.states = new ArrayList<>();
-        deterministicAutomaton.transitions = new ArrayList<>();
+    public B3_Automaton determinizeAutomaton() {
+        if (this.isDeterminist()) {
+            System.out.println("L'automate est déjà déterministe.");
+            return this;
+        }
 
-        B3_State initialState = combineStates(initialStates);
-        initialState.setInitial(true);
-        deterministicAutomaton.initialStates.add(initialState);
+        B3_Automaton determinized = new B3_Automaton();
+        determinized.alphabet = new ArrayList<>(this.alphabet);
+        //Structure de données pour mapper les ensembles d'états de l'automate d'origine à ceux du nouvel automate
+        Map<Set<B3_State>, B3_State> stateMap = new HashMap<>();
+        //file pour traiter les ensembles des états
+        Queue<Set<B3_State>> toProcess = new LinkedList<>();
+        Set<B3_State> initialSet = new HashSet<>(this.initialStates);
+        B3_State newInitialState = new B3_State(createStateName(initialSet), true, checkFinal(initialSet));
 
-        // HashSet pour stocker les états déjà traités
-        HashSet<B3_State> processedStates = new HashSet<>();
+        //Permet d'associer l'ensemble des états initiaux de l'automate d'origine avec le nouvel état initial
+        stateMap.put(initialSet, newInitialState);
+        determinized.addState(newInitialState);
+        determinized.addInitialState(newInitialState);
+        toProcess.add(initialSet);
 
-        ArrayList<B3_State> queue = new ArrayList<>();
-        queue.add(initialState);
+        while (!toProcess.isEmpty()) {
+            Set<B3_State> currentSet = toProcess.poll();
+            //Récupère l'état correspondant dans le nouvel automate.
+            B3_State currentState = stateMap.get(currentSet);
 
-        // Tant qu'il y a des états à traiter dans la file
-        while (!queue.isEmpty()) {
-            B3_State currentState = queue.removeFirst();
-            processedStates.add(currentState);
-
-            deterministicAutomaton.states.add(currentState);
-
-            if (containsFinalState(currentState, finalStates)) {
-                currentState.setFinal(true);
-                deterministicAutomaton.finalStates.add(currentState);
-            }
-
-            for (char symbol : alphabet) {
-                ArrayList<B3_State> reachableStates = new ArrayList<>();
-                for (B3_Transition transition : transitions) {
-                    for(B3_State state : initialStates){
-                        if (transition.getFromState().equals(state) && transition.getSymbol() == symbol) {
-                            reachableStates.add(transition.getToState());
+            //examinent chaque transition de l'automate d'origine pour trouver les états atteignables depuis l'ensemble d'états courant avec le symbole courant
+            for (char symbol : this.alphabet) {
+                Set<B3_State> newStateSet = new HashSet<>();
+                for (B3_State s : currentSet) {
+                    for (B3_Transition t : transitions) {
+                        if (t.getFromState().equals(s) && t.getSymbol() == symbol) {
+                            newStateSet.add(t.getToState());
                         }
                     }
                 }
-                B3_State combinedState = combineStates(reachableStates);
-
-                if (!combinedState.getName().isEmpty()) {
-                    deterministicAutomaton.transitions.add(new B3_Transition(currentState, combinedState, symbol));
-                    if (!processedStates.contains(combinedState) && !queue.contains(combinedState)) {
-                        queue.add(combinedState);
+                if (!newStateSet.isEmpty()) {
+                    B3_State newState = stateMap.computeIfAbsent(newStateSet, k -> {
+                        B3_State state = new B3_State(createStateName(newStateSet), false, checkFinal(newStateSet));
+                        determinized.addState(state);
+                        return state;
+                    });
+                    determinized.addTransition(new B3_Transition(currentState, newState, symbol));
+                    if (!stateMap.containsKey(newStateSet)) {
+                        toProcess.add(newStateSet);
                     }
                 }
             }
-            queue.clear();
         }
 
-        return deterministicAutomaton;
+        return determinized;
     }
 
-    private B3_State combineStates(ArrayList<B3_State> states) {
-        StringBuilder combinedName = new StringBuilder();
-        for (B3_State state : states) {
-            combinedName.append(state.getName());
-        }
-        return new B3_State(combinedName.toString(), false, false);
+    //Permet de créer un nom d'état en concaténant plusieurs noms d'états différents
+    private String createStateName(Set<B3_State> states) {
+        return states.stream().map(B3_State::getName).sorted().collect(Collectors.joining("_"));
     }
 
-    private boolean containsFinalState(B3_State combinedState, ArrayList<B3_State> finalStates) {
-        for (B3_State state : finalStates) {
-            if (combinedState.getName().contains(state.getName())) {
+    //Vérifie si un état du set est terminal ou pas
+    private boolean checkFinal(Set<B3_State> states) {
+        for (B3_State s : states) {
+            if (s.isFinal()) {
                 return true;
             }
         }
